@@ -130,7 +130,7 @@ function NavbarSearch() {
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
     setValue(newValue);
-    navigate({ to: "/products", search: (prev) => ({ ...prev, q: newValue }) });
+    navigate({ to: "/products", search: (prev: { q?: string }) => ({ ...prev, q: newValue }) });
   };
 
   return (
