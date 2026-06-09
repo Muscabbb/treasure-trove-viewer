@@ -118,8 +118,21 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
+      <nav className="fixed top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur">
+        <div className="mx-auto flex h-14 max-w-7xl items-center px-4 sm:px-6 lg:px-8">
+          <Link to="/" className="text-lg font-semibold tracking-tight text-foreground hover:opacity-80">
+            Product Catalog
+          </Link>
+          <div className="ml-8 flex items-center gap-4">
+            <Link to="/products" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
+              Products
+            </Link>
+          </div>
+        </div>
+      </nav>
+      <div className="pt-14">
+        <Outlet />
+      </div>
     </QueryClientProvider>
   );
 }
