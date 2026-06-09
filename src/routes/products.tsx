@@ -38,7 +38,7 @@ function ProductsPage() {
     if (!q) return products;
     const terms = q.split(/\s+/);
     return products.filter((p) => {
-      const hay = `${p.name} ${p.reference ?? ""} ${p.category ?? ""}`.toLowerCase();
+      const hay = p.name.toLowerCase();
       return terms.every((t) => hay.includes(t));
     });
   }, [query]);
