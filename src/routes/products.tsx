@@ -1,10 +1,9 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { createFileRoute, Link, useSearch } from "@tanstack/react-router";
+import { useMemo } from "react";
 import productsData from "@/data/products.json";
-import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Package, Search } from "lucide-react";
+import { Package } from "lucide-react";
 
 type Product = {
   name: string;
