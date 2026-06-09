@@ -24,7 +24,7 @@ export const Route = createFileRoute("/products")({
   head: () => ({
     meta: [
       { title: "Products Catalog" },
-      { name: "description", content: "Browse our product catalog with smart search across names, references, and categories." },
+      { name: "description", content: "Browse our product catalog with smart search by product name." },
     ],
   }),
   component: ProductsPage,
