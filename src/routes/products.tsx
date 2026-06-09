@@ -30,7 +30,7 @@ export const Route = createFileRoute("/products")({
 });
 
 function ProductsPage() {
-  const { q } = Route.useSearch({ strict: false }) as { q?: string };
+  const { q } = Route.useSearch() as { q?: string };
 
   const filtered = useMemo(() => {
     const query = (q || "").trim().toLowerCase();
