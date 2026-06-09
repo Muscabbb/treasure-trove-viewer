@@ -6,11 +6,15 @@ import {
   useRouter,
   HeadContent,
   Scripts,
+  useNavigate,
+  useRouterState,
 } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode, type ChangeEvent } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { Input } from "@/components/ui/input";
+import { Search } from "lucide-react";
 
 function NotFoundComponent() {
   return (
@@ -113,21 +117,52 @@ function RootShell({ children }: { children: ReactNode }) {
   );
 }
 
+function NavbarSearch() {
+  const navigate = useNavigate();
+  const routerState = useRouterState();
+  const currentSearch = routerState.location.search as { q?: string };
+  const [value, setValue] = useState(currentSearch?.q || "");
+
+  useEffect(() => {
+    setValue(currentSearch?.q || "");
+  }, [currentSearch?.q]);
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value;
+    setValue(newValue);
+    navigate({ to: "/products", search: (prev: { q?: string }) => ({ ...prev, q: newValue }) });
+  };
+
+  return (
+    <div className="relative ml-auto w-full max-w-xs sm:max-w-sm">
+      <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+      <Input
+        value={value}
+        onChange={handleChange}
+        placeholder="Search products..."
+        className="h-9 pl-9 text-sm"
+        aria-label="Search products"
+      />
+    </div>
+  );
+}
+
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
   return (
     <QueryClientProvider client={queryClient}>
       <nav className="fixed top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur">
-        <div className="mx-auto flex h-14 max-w-7xl items-center px-4 sm:px-6 lg:px-8">
-          <Link to="/" className="text-lg font-semibold tracking-tight text-foreground hover:opacity-80">
+        <div className="mx-auto flex h-14 max-w-7xl items-center gap-4 px-4 sm:px-6 lg:px-8">
+          <Link to="/" className="shrink-0 text-lg font-semibold tracking-tight text-foreground hover:opacity-80">
             Product Catalog
           </Link>
-          <div className="ml-8 flex items-center gap-4">
+          <div className="hidden items-center gap-4 sm:flex">
             <Link to="/products" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
               Products
             </Link>
           </div>
+          <NavbarSearch />
         </div>
       </nav>
       <div className="pt-14">
