@@ -6,15 +6,11 @@ import {
   useRouter,
   HeadContent,
   Scripts,
-  useNavigate,
-  useRouterState,
 } from "@tanstack/react-router";
-import { useEffect, useState, type ReactNode, type ChangeEvent } from "react";
+import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
-import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
 
 function NotFoundComponent() {
   return (
@@ -81,14 +77,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
+      { title: "Products" },
+      { name: "description", content: "Showcase products with smart search, filtering, and detailed views." },
       { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { property: "og:title", content: "Products" },
+      { property: "og:description", content: "Showcase products with smart search, filtering, and detailed views." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "Products" },
+      { name: "twitter:description", content: "Showcase products with smart search, filtering, and detailed views." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/a36bf473-d82b-41a7-8255-197ac20ccf9e/id-preview-72627228--94dff00d-6b9f-424e-8833-0a717b7aa6e8.lovable.app-1780996699807.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/a36bf473-d82b-41a7-8255-197ac20ccf9e/id-preview-72627228--94dff00d-6b9f-424e-8833-0a717b7aa6e8.lovable.app-1780996699807.png" },
     ],
     links: [
       {
@@ -117,52 +117,21 @@ function RootShell({ children }: { children: ReactNode }) {
   );
 }
 
-function NavbarSearch() {
-  const navigate = useNavigate();
-  const routerState = useRouterState();
-  const currentSearch = routerState.location.search as { q?: string };
-  const [value, setValue] = useState(currentSearch?.q || "");
-
-  useEffect(() => {
-    setValue(currentSearch?.q || "");
-  }, [currentSearch?.q]);
-
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const newValue = e.target.value;
-    setValue(newValue);
-    navigate({ to: "/products", search: (prev: { q?: string }) => ({ ...prev, q: newValue }) });
-  };
-
-  return (
-    <div className="relative ml-auto w-full max-w-xs sm:max-w-sm">
-      <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-      <Input
-        value={value}
-        onChange={handleChange}
-        placeholder="Search products..."
-        className="h-9 pl-9 text-sm"
-        aria-label="Search products"
-      />
-    </div>
-  );
-}
-
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
   return (
     <QueryClientProvider client={queryClient}>
       <nav className="fixed top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur">
-        <div className="mx-auto flex h-14 max-w-7xl items-center gap-4 px-4 sm:px-6 lg:px-8">
-          <Link to="/" className="shrink-0 text-lg font-semibold tracking-tight text-foreground hover:opacity-80">
+        <div className="mx-auto flex h-14 max-w-7xl items-center px-4 sm:px-6 lg:px-8">
+          <Link to="/" className="text-lg font-semibold tracking-tight text-foreground hover:opacity-80">
             Product Catalog
           </Link>
-          <div className="hidden items-center gap-4 sm:flex">
+          <div className="ml-8 flex items-center gap-4">
             <Link to="/products" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
               Products
             </Link>
           </div>
-          <NavbarSearch />
         </div>
       </nav>
       <div className="pt-14">
