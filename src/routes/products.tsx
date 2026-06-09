@@ -61,7 +61,8 @@ function ProductsPage() {
             <Input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search by name, reference, category..."
+              placeholder="Search by name..."
+
               className="pl-9"
               aria-label="Search products"
             />
