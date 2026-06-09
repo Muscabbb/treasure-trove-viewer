@@ -24,7 +24,7 @@ export const Route = createFileRoute("/products")({
   head: () => ({
     meta: [
       { title: "Products Catalog" },
-      { name: "description", content: "Browse our product catalog with smart search across names, references, and categories." },
+      { name: "description", content: "Browse our product catalog with smart search by product name." },
     ],
   }),
   component: ProductsPage,
@@ -38,7 +38,7 @@ function ProductsPage() {
     if (!q) return products;
     const terms = q.split(/\s+/);
     return products.filter((p) => {
-      const hay = `${p.name} ${p.reference ?? ""} ${p.category ?? ""}`.toLowerCase();
+      const hay = p.name.toLowerCase();
       return terms.every((t) => hay.includes(t));
     });
   }, [query]);
@@ -61,7 +61,8 @@ function ProductsPage() {
             <Input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search by name, reference, category..."
+              placeholder="Search by name..."
+
               className="pl-9"
               aria-label="Search products"
             />
