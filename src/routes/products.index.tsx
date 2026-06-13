@@ -42,7 +42,7 @@ function ProductsPage() {
     const terms = query.split(/\s+/);
     return indexed.filter(({ p }) => {
       const hay = p.name.toLowerCase();
-      return terms.every((t) => hay.includes(t));
+      return terms.every((t: string) => hay.includes(t));
     });
   }, [q]);
 
