@@ -1,9 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo } from "react";
 import productsData from "@/data/products.json";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Package } from "lucide-react";
+import { Package, TrendingUp, Sparkles } from "lucide-react";
 
 type Product = {
   name: string;
@@ -18,6 +17,24 @@ type Product = {
 };
 
 const products = productsData as Product[];
+
+// Vibrant gradient palettes — picked deterministically per card
+const palettes = [
+  { from: "from-rose-400", via: "via-pink-500", to: "to-fuchsia-500", glow: "shadow-pink-500/30", ring: "ring-pink-500/20" },
+  { from: "from-amber-400", via: "via-orange-500", to: "to-red-500", glow: "shadow-orange-500/30", ring: "ring-orange-500/20" },
+  { from: "from-emerald-400", via: "via-teal-500", to: "to-cyan-500", glow: "shadow-teal-500/30", ring: "ring-teal-500/20" },
+  { from: "from-sky-400", via: "via-blue-500", to: "to-indigo-600", glow: "shadow-blue-500/30", ring: "ring-blue-500/20" },
+  { from: "from-violet-400", via: "via-purple-500", to: "to-fuchsia-600", glow: "shadow-violet-500/30", ring: "ring-violet-500/20" },
+  { from: "from-lime-400", via: "via-green-500", to: "to-emerald-600", glow: "shadow-green-500/30", ring: "ring-green-500/20" },
+  { from: "from-yellow-400", via: "via-amber-500", to: "to-orange-500", glow: "shadow-amber-500/30", ring: "ring-amber-500/20" },
+  { from: "from-cyan-400", via: "via-sky-500", to: "to-blue-600", glow: "shadow-sky-500/30", ring: "ring-sky-500/20" },
+];
+
+function paletteFor(key: string) {
+  let h = 0;
+  for (let i = 0; i < key.length; i++) h = (h * 31 + key.charCodeAt(i)) | 0;
+  return palettes[Math.abs(h) % palettes.length];
+}
 
 export const Route = createFileRoute("/products/")({
   head: () => ({
@@ -50,71 +67,106 @@ function ProductsPage() {
     new Intl.NumberFormat("en-US", { style: "currency", currency: cur || "USD" }).format(n);
 
   return (
-    <main className="min-h-screen bg-background">
-      <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-        <header className="mb-8">
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">Products</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
+    <main className="relative min-h-screen overflow-hidden bg-background">
+      {/* Decorative background blobs */}
+      <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+        <div className="absolute -top-32 -left-24 size-[28rem] rounded-full bg-fuchsia-300/30 blur-3xl" />
+        <div className="absolute top-40 -right-24 size-[28rem] rounded-full bg-sky-300/30 blur-3xl" />
+        <div className="absolute bottom-0 left-1/3 size-[24rem] rounded-full bg-amber-200/30 blur-3xl" />
+      </div>
+
+      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+        <header className="mb-10 animate-fade-in">
+          <div className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background/60 px-3 py-1 text-xs font-medium text-muted-foreground backdrop-blur">
+            <Sparkles className="size-3.5 text-fuchsia-500" />
+            Curated collection
+          </div>
+          <h1 className="mt-4 text-4xl font-bold tracking-tight sm:text-5xl">
+            <span className="bg-gradient-to-r from-fuchsia-600 via-violet-600 to-indigo-600 bg-clip-text text-transparent">
+              Products
+            </span>
+          </h1>
+          <p className="mt-2 text-sm text-muted-foreground">
             {filtered.length.toLocaleString()} of {products.length.toLocaleString()} items
+            {q && <span> matching “{q}”</span>}
           </p>
         </header>
 
         {filtered.length === 0 ? (
-          <div className="rounded-lg border border-dashed py-20 text-center text-muted-foreground">
+          <div className="rounded-2xl border border-dashed py-20 text-center text-muted-foreground">
             No products match &ldquo;{q}&rdquo;
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {filtered.slice(0, 200).map(({ p, i }) => {
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {filtered.slice(0, 200).map(({ p, i }, idx) => {
               const margin = p.price > 0 ? ((p.price - p.cost) / p.price) * 100 : 0;
+              const pal = paletteFor(p.reference || p.name);
               return (
                 <Link
                   key={`${p.reference}-${i}`}
                   to="/products/$productIndex"
                   params={{ productIndex: String(i) }}
-                  className="group block"
+                  className="group block animate-fade-in"
+                  style={{ animationDelay: `${Math.min(idx, 20) * 30}ms`, animationFillMode: "backwards" }}
                 >
-                  <Card className="h-full overflow-hidden transition hover:shadow-md">
-                    <div className="flex aspect-square items-center justify-center bg-muted">
-                      <Package className="size-16 text-muted-foreground/40 transition group-hover:text-muted-foreground/60" strokeWidth={1.25} />
-                    </div>
-                    <CardHeader className="pb-2">
-                      <div className="flex items-start justify-between gap-2">
-                        <CardTitle className="line-clamp-2 text-base">{p.name}</CardTitle>
-                        {p.category && <Badge variant="secondary" className="shrink-0">{p.category}</Badge>}
-                      </div>
-                      {p.reference && (
-                        <p className="font-mono text-xs text-muted-foreground">{p.reference}</p>
+                  <article
+                    className={`relative h-full overflow-hidden rounded-2xl border border-border/60 bg-card shadow-sm ring-1 ring-transparent transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:${pal.glow} hover:${pal.ring}`}
+                  >
+                    {/* Image / gradient hero */}
+                    <div className={`relative flex aspect-[4/3] items-center justify-center overflow-hidden bg-gradient-to-br ${pal.from} ${pal.via} ${pal.to}`}>
+                      <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.35),transparent_60%)]" />
+                      <div className="absolute -bottom-10 -right-10 size-40 rounded-full bg-white/20 blur-2xl transition-transform duration-500 group-hover:scale-125" />
+                      <Package
+                        className="relative size-20 text-white/90 drop-shadow-lg transition-transform duration-500 group-hover:scale-110 group-hover:rotate-6"
+                        strokeWidth={1.25}
+                      />
+                      {p.category && (
+                        <Badge className="absolute left-3 top-3 border-0 bg-white/90 text-foreground shadow-sm backdrop-blur">
+                          {p.category}
+                        </Badge>
                       )}
-                    </CardHeader>
-                    <CardContent className="space-y-2 pt-0 text-sm">
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">Cost</span>
-                        <span className="font-medium">{fmt(p.cost, p.currency)}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">Price</span>
-                        <span className="font-semibold text-foreground">{fmt(p.price, p.currency)}</span>
-                      </div>
-                      <div className="flex items-center justify-between border-t pt-2">
-                        <span className="text-xs text-muted-foreground">
-                          {p.quantity} {p.unit || ""} in stock
-                        </span>
-                        {margin > 0 && (
-                          <Badge variant="outline" className="text-xs">
-                            {margin.toFixed(0)}% margin
-                          </Badge>
+                      {margin > 0 && (
+                        <div className="absolute right-3 top-3 inline-flex items-center gap-1 rounded-full bg-black/30 px-2 py-1 text-xs font-semibold text-white backdrop-blur">
+                          <TrendingUp className="size-3" />
+                          {margin.toFixed(0)}%
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="space-y-3 p-4">
+                      <div>
+                        <h3 className="line-clamp-2 font-semibold leading-snug text-foreground transition-colors group-hover:text-fuchsia-600">
+                          {p.name}
+                        </h3>
+                        {p.reference && (
+                          <p className="mt-1 font-mono text-[11px] text-muted-foreground">{p.reference}</p>
                         )}
                       </div>
-                    </CardContent>
-                  </Card>
+
+                      <div className="flex items-end justify-between border-t border-dashed pt-3">
+                        <div>
+                          <div className="text-[11px] uppercase tracking-wide text-muted-foreground">Price</div>
+                          <div className={`bg-gradient-to-r ${pal.from} ${pal.to} bg-clip-text text-lg font-bold text-transparent`}>
+                            {fmt(p.price, p.currency)}
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-[11px] uppercase tracking-wide text-muted-foreground">Stock</div>
+                          <div className="text-sm font-semibold">
+                            {p.quantity}
+                            <span className="ml-0.5 text-xs font-normal text-muted-foreground">{p.unit || ""}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </article>
                 </Link>
               );
             })}
           </div>
         )}
         {filtered.length > 200 && (
-          <p className="mt-6 text-center text-sm text-muted-foreground">
+          <p className="mt-8 text-center text-sm text-muted-foreground">
             Showing first 200 results. Refine your search to see more.
           </p>
         )}
