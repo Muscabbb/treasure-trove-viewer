@@ -110,7 +110,7 @@ function ProductsPage() {
                   style={{ animationDelay: `${Math.min(idx, 20) * 30}ms`, animationFillMode: "backwards" }}
                 >
                   <article
-                    className={`relative h-full overflow-hidden rounded-2xl border border-border/60 bg-card shadow-sm ring-1 ring-transparent transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:${pal.glow} hover:${pal.ring}`}
+                    className="relative h-full overflow-hidden rounded-2xl border border-border/60 bg-card shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl"
                   >
                     {/* Image / gradient hero */}
                     <div className={`relative flex aspect-[4/3] items-center justify-center overflow-hidden bg-gradient-to-br ${pal.from} ${pal.via} ${pal.to}`}>
