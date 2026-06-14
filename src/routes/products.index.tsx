@@ -20,14 +20,14 @@ const products = productsData as Product[];
 
 // Vibrant gradient palettes — picked deterministically per card
 const palettes = [
-  { from: "from-rose-400", via: "via-pink-500", to: "to-fuchsia-500", glow: "shadow-pink-500/30", ring: "ring-pink-500/20" },
-  { from: "from-amber-400", via: "via-orange-500", to: "to-red-500", glow: "shadow-orange-500/30", ring: "ring-orange-500/20" },
-  { from: "from-emerald-400", via: "via-teal-500", to: "to-cyan-500", glow: "shadow-teal-500/30", ring: "ring-teal-500/20" },
-  { from: "from-sky-400", via: "via-blue-500", to: "to-indigo-600", glow: "shadow-blue-500/30", ring: "ring-blue-500/20" },
-  { from: "from-violet-400", via: "via-purple-500", to: "to-fuchsia-600", glow: "shadow-violet-500/30", ring: "ring-violet-500/20" },
-  { from: "from-lime-400", via: "via-green-500", to: "to-emerald-600", glow: "shadow-green-500/30", ring: "ring-green-500/20" },
-  { from: "from-yellow-400", via: "via-amber-500", to: "to-orange-500", glow: "shadow-amber-500/30", ring: "ring-amber-500/20" },
-  { from: "from-cyan-400", via: "via-sky-500", to: "to-blue-600", glow: "shadow-sky-500/30", ring: "ring-sky-500/20" },
+  { from: "from-rose-400", via: "via-pink-500", to: "to-fuchsia-500" },
+  { from: "from-amber-400", via: "via-orange-500", to: "to-red-500" },
+  { from: "from-emerald-400", via: "via-teal-500", to: "to-cyan-500" },
+  { from: "from-sky-400", via: "via-blue-500", to: "to-indigo-600" },
+  { from: "from-violet-400", via: "via-purple-500", to: "to-fuchsia-600" },
+  { from: "from-lime-400", via: "via-green-500", to: "to-emerald-600" },
+  { from: "from-yellow-400", via: "via-amber-500", to: "to-orange-500" },
+  { from: "from-cyan-400", via: "via-sky-500", to: "to-blue-600" },
 ];
 
 function paletteFor(key: string) {
