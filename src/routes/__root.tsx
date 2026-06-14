@@ -4,10 +4,13 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useNavigate,
+  useRouterState,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
+import { Search, Sparkles } from "lucide-react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -84,11 +87,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:description", content: "Showcase products with smart search, filtering, and detailed views." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
-      { name: "twitter:title", content: "Products" },
-      { name: "twitter:description", content: "Showcase products with smart search, filtering, and detailed views." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/a36bf473-d82b-41a7-8255-197ac20ccf9e/id-preview-72627228--94dff00d-6b9f-424e-8833-0a717b7aa6e8.lovable.app-1780996699807.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/a36bf473-d82b-41a7-8255-197ac20ccf9e/id-preview-72627228--94dff00d-6b9f-424e-8833-0a717b7aa6e8.lovable.app-1780996699807.png" },
     ],
     links: [
       {
@@ -117,24 +115,69 @@ function RootShell({ children }: { children: ReactNode }) {
   );
 }
 
+function NavbarSearch() {
+  const navigate = useNavigate();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const searchParam = useRouterState({
+    select: (s) => (s.location.search as { q?: string })?.q ?? "",
+  });
+  const [value, setValue] = useState(searchParam);
+
+  useEffect(() => {
+    setValue(searchParam);
+  }, [searchParam]);
+
+  useEffect(() => {
+    const t = setTimeout(() => {
+      if (value === searchParam) return;
+      navigate({
+        to: "/products",
+        search: value ? { q: value } : {},
+        replace: pathname === "/products",
+      });
+    }, 200);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value]);
+
+  return (
+    <div className="relative w-full max-w-sm">
+      <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+      <input
+        type="text"
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        placeholder="Search products…"
+        className="h-9 w-full rounded-full border border-border/60 bg-background/60 pl-9 pr-3 text-sm shadow-sm outline-none transition-all focus:border-primary/60 focus:bg-background focus:ring-2 focus:ring-primary/20"
+      />
+    </div>
+  );
+}
+
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
   return (
     <QueryClientProvider client={queryClient}>
-      <nav className="fixed top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur">
-        <div className="mx-auto flex h-14 max-w-7xl items-center px-4 sm:px-6 lg:px-8">
-          <Link to="/" className="text-lg font-semibold tracking-tight text-foreground hover:opacity-80">
-            Product Catalog
+      <nav className="fixed top-0 z-50 w-full border-b border-border/60 bg-background/70 backdrop-blur-xl">
+        <div className="mx-auto flex h-16 max-w-7xl items-center gap-6 px-4 sm:px-6 lg:px-8">
+          <Link to="/" className="flex items-center gap-2 font-semibold tracking-tight">
+            <span className="grid size-8 place-items-center rounded-lg bg-gradient-to-br from-fuchsia-500 via-violet-500 to-indigo-500 text-white shadow-lg shadow-violet-500/30">
+              <Sparkles className="size-4" />
+            </span>
+            <span className="bg-gradient-to-r from-fuchsia-600 via-violet-600 to-indigo-600 bg-clip-text text-transparent">
+              Catalog
+            </span>
           </Link>
-          <div className="ml-8 flex items-center gap-4">
-            <Link to="/products" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
-              Products
-            </Link>
+          <Link to="/products" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
+            Products
+          </Link>
+          <div className="ml-auto">
+            <NavbarSearch />
           </div>
         </div>
       </nav>
-      <div className="pt-14">
+      <div className="pt-16">
         <Outlet />
       </div>
     </QueryClientProvider>
