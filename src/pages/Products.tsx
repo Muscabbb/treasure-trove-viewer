@@ -1,8 +1,9 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { Link, useSearchParams } from "react-router-dom";
 import { useMemo } from "react";
 import productsData from "@/data/products.json";
 import { Badge } from "@/components/ui/badge";
 import { Package, TrendingUp, Sparkles } from "lucide-react";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 
 type Product = {
   name: string;
@@ -18,7 +19,6 @@ type Product = {
 
 const products = productsData as Product[];
 
-// Vibrant gradient palettes — picked deterministically per card
 const palettes = [
   { from: "from-rose-400", via: "via-pink-500", to: "to-fuchsia-500" },
   { from: "from-amber-400", via: "via-orange-500", to: "to-red-500" },
@@ -36,30 +36,19 @@ function paletteFor(key: string) {
   return palettes[Math.abs(h) % palettes.length];
 }
 
-export const Route = createFileRoute("/products/")({
-  head: () => ({
-    meta: [
-      { title: "Products Catalog" },
-      { name: "description", content: "Browse our product catalog with smart search by product name." },
-    ],
-  }),
-  validateSearch: (search: Record<string, unknown>) => ({
-    q: (search.q as string) || "",
-  }),
-  component: ProductsPage,
-});
-
-function ProductsPage() {
-  const { q } = Route.useSearch();
+export default function Products() {
+  useDocumentTitle("Products Catalog", "Browse our product catalog with smart search by product name.");
+  const [params] = useSearchParams();
+  const q = params.get("q") ?? "";
 
   const filtered = useMemo(() => {
-    const query = (q || "").trim().toLowerCase();
+    const query = q.trim().toLowerCase();
     const indexed = products.map((p, i) => ({ p, i }));
     if (!query) return indexed;
     const terms = query.split(/\s+/);
     return indexed.filter(({ p }) => {
       const hay = p.name.toLowerCase();
-      return terms.every((t: string) => hay.includes(t));
+      return terms.every((t) => hay.includes(t));
     });
   }, [q]);
 
@@ -68,7 +57,6 @@ function ProductsPage() {
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-background">
-      {/* Decorative background blobs */}
       <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
         <div className="absolute -top-32 -left-24 size-[28rem] rounded-full bg-fuchsia-300/30 blur-3xl" />
         <div className="absolute top-40 -right-24 size-[28rem] rounded-full bg-sky-300/30 blur-3xl" />
@@ -104,15 +92,11 @@ function ProductsPage() {
               return (
                 <Link
                   key={`${p.reference}-${i}`}
-                  to="/products/$productIndex"
-                  params={{ productIndex: String(i) }}
+                  to={`/products/${i}`}
                   className="group block animate-fade-in"
                   style={{ animationDelay: `${Math.min(idx, 20) * 30}ms`, animationFillMode: "backwards" }}
                 >
-                  <article
-                    className="relative h-full overflow-hidden rounded-2xl border border-border/60 bg-card shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl"
-                  >
-                    {/* Image / gradient hero */}
+                  <article className="relative h-full overflow-hidden rounded-2xl border border-border/60 bg-card shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl">
                     <div className={`relative flex aspect-[4/3] items-center justify-center overflow-hidden bg-gradient-to-br ${pal.from} ${pal.via} ${pal.to}`}>
                       <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.35),transparent_60%)]" />
                       <div className="absolute -bottom-10 -right-10 size-40 rounded-full bg-white/20 blur-2xl transition-transform duration-500 group-hover:scale-125" />

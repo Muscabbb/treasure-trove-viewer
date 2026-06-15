@@ -1,9 +1,10 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { Link, useParams } from "react-router-dom";
 import productsData from "@/data/products.json";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Package, ArrowLeft } from "lucide-react";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 
 type Product = {
   name: string;
@@ -19,29 +20,8 @@ type Product = {
 
 const products = productsData as Product[];
 
-export const Route = createFileRoute("/products/$productIndex")({
-  head: ({ params }) => {
-    const idx = Number(params.productIndex);
-    const product = products[idx];
-    return {
-      meta: [
-        { title: product ? `${product.name} — Product Details` : "Product Not Found" },
-        { name: "description", content: product ? `Details for ${product.name}` : "Product not found" },
-      ],
-    };
-  },
-  loader: ({ params }) => {
-    const idx = Number(params.productIndex);
-    if (Number.isNaN(idx) || idx < 0 || idx >= products.length) {
-      throw notFound();
-    }
-    return { product: products[idx], index: idx };
-  },
-  component: ProductDetailPage,
-  notFoundComponent: ProductNotFound,
-});
-
 function ProductNotFound() {
+  useDocumentTitle("Product Not Found");
   return (
     <main className="min-h-screen bg-background">
       <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
@@ -62,8 +42,18 @@ function ProductNotFound() {
   );
 }
 
-function ProductDetailPage() {
-  const { product, index } = Route.useLoaderData();
+export default function ProductDetail() {
+  const { productIndex } = useParams<{ productIndex: string }>();
+  const idx = Number(productIndex);
+  const product = !Number.isNaN(idx) && idx >= 0 && idx < products.length ? products[idx] : null;
+
+  useDocumentTitle(
+    product ? `${product.name} — Product Details` : "Product Not Found",
+    product ? `Details for ${product.name}` : undefined
+  );
+
+  if (!product) return <ProductNotFound />;
+
   const fmt = (n: number, cur: string | null) =>
     new Intl.NumberFormat("en-US", { style: "currency", currency: cur || "USD" }).format(n);
 
@@ -80,12 +70,10 @@ function ProductDetailPage() {
         </div>
 
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-          {/* Image placeholder */}
           <div className="flex aspect-square items-center justify-center rounded-xl border bg-muted">
             <Package className="size-32 text-muted-foreground/30" strokeWidth={1} />
           </div>
 
-          {/* Details */}
           <div className="space-y-6">
             <div>
               <div className="flex items-center gap-2">

@@ -1,16 +1,8 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { Link } from "react-router-dom";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 
-export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: [
-      { title: "Product Catalog" },
-      { name: "description", content: "Browse the product catalog." },
-    ],
-  }),
-  component: Index,
-});
-
-function Index() {
+export default function Home() {
+  useDocumentTitle("Product Catalog", "Browse the product catalog.");
   return (
     <main className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
