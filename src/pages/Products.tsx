@@ -45,10 +45,30 @@ export default function Products() {
     const query = q.trim().toLowerCase();
     const indexed = products.map((p, i) => ({ p, i }));
     if (!query) return indexed;
-    const terms = query.split(/\s+/);
+
+    // Tokenize: split on whitespace/punctuation AND on digit↔letter boundaries
+    // so "2MP" → ["2", "mp"] and "4mp" → ["4", "mp"].
+    const tokenize = (s: string): string[] =>
+      s
+        .toLowerCase()
+        .replace(/([a-z])(\d)/g, "$1 $2")
+        .replace(/(\d)([a-z])/g, "$1 $2")
+        .split(/[^a-z0-9]+/)
+        .filter(Boolean);
+
+    const terms = tokenize(query);
+    if (terms.length === 0) return indexed;
+
     return indexed.filter(({ p }) => {
-      const hay = p.name.toLowerCase();
-      return terms.every((t) => hay.includes(t));
+      const tokens = tokenize(p.name);
+      // Each query term must match a whole token exactly,
+      // except the last term may be a prefix (for live typing).
+      return terms.every((t, idx) => {
+        if (idx === terms.length - 1) {
+          return tokens.some((tok) => tok.startsWith(t));
+        }
+        return tokens.includes(t);
+      });
     });
   }, [q]);
 
