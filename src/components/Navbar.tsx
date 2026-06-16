@@ -13,30 +13,27 @@ function NavbarSearch() {
     setValue(q);
   }, [q]);
 
-  useEffect(() => {
-    const t = setTimeout(() => {
-      if (value === q) return;
-      const search = value ? `?q=${encodeURIComponent(value)}` : "";
-      navigate(
-        { pathname: "/products", search },
-        { replace: location.pathname === "/products" }
-      );
-    }, 200);
-    return () => clearTimeout(t);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [value]);
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const trimmed = value.trim();
+    const search = trimmed ? `?q=${encodeURIComponent(trimmed)}` : "";
+    navigate(
+      { pathname: "/products", search },
+      { replace: location.pathname === "/products" }
+    );
+  };
 
   return (
-    <div className="relative w-full max-w-sm">
+    <form onSubmit={handleSubmit} className="relative w-full max-w-sm">
       <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
       <input
-        type="text"
+        type="search"
         value={value}
         onChange={(e) => setValue(e.target.value)}
-        placeholder="Search products…"
+        placeholder="Search products… (press Enter)"
         className="h-9 w-full rounded-full border border-border/60 bg-background/60 pl-9 pr-3 text-sm shadow-sm outline-none transition-all focus:border-primary/60 focus:bg-background focus:ring-2 focus:ring-primary/20"
       />
-    </div>
+    </form>
   );
 }
 
