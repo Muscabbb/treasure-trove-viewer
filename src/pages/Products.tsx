@@ -61,14 +61,8 @@ export default function Products() {
 
     return indexed.filter(({ p }) => {
       const tokens = tokenize(p.name);
-      // Each query term must match a whole token exactly,
-      // except the last term may be a prefix (for live typing).
-      return terms.every((t, idx) => {
-        if (idx === terms.length - 1) {
-          return tokens.some((tok) => tok.startsWith(t));
-        }
-        return tokens.includes(t);
-      });
+      // Whole-token exact match for every term (search runs on submit).
+      return terms.every((t) => tokens.includes(t));
     });
   }, [q]);
 
