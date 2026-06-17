@@ -43,6 +43,8 @@ export default function Products() {
   useDocumentTitle("Products Catalog", "Browse our product catalog with smart search by product name.");
   const [params] = useSearchParams();
   const q = params.get("q") ?? "";
+  const [layout, setLayout] = useState<LayoutMode>("grid");
+
 
   const filtered = useMemo(() => {
     const query = q.trim().toLowerCase();
