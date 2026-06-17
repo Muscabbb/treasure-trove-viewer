@@ -99,11 +99,35 @@ export default function Products() {
           </p>
         </header>
 
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+          <div className="text-xs uppercase tracking-wide text-muted-foreground">View as</div>
+          <div className="inline-flex rounded-xl border border-border/60 bg-background/60 p-1 backdrop-blur">
+            {([
+              { id: "grid", label: "Cards", Icon: LayoutGrid },
+              { id: "list", label: "List", Icon: Rows3 },
+              { id: "table", label: "Table", Icon: TableIcon },
+            ] as { id: LayoutMode; label: string; Icon: typeof LayoutGrid }[]).map(({ id, label, Icon }) => (
+              <Button
+                key={id}
+                type="button"
+                size="sm"
+                variant={layout === id ? "default" : "ghost"}
+                onClick={() => setLayout(id)}
+                className="gap-1.5"
+                aria-pressed={layout === id}
+              >
+                <Icon className="size-4" />
+                <span className="hidden sm:inline">{label}</span>
+              </Button>
+            ))}
+          </div>
+        </div>
+
         {filtered.length === 0 ? (
           <div className="rounded-2xl border border-dashed py-20 text-center text-muted-foreground">
             No products match &ldquo;{q}&rdquo;
           </div>
-        ) : (
+        ) : layout === "grid" ? (
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {filtered.slice(0, 200).map(({ p, i }, idx) => {
               const margin = p.price > 0 ? ((p.price - p.cost) / p.price) * 100 : 0;
@@ -166,6 +190,72 @@ export default function Products() {
                 </Link>
               );
             })}
+          </div>
+        ) : layout === "list" ? (
+          <div className="flex flex-col gap-3">
+            {filtered.slice(0, 200).map(({ p, i }, idx) => {
+              const pal = paletteFor(p.reference || p.name);
+              return (
+                <Link
+                  key={`${p.reference}-${i}`}
+                  to={`/products/${i}`}
+                  className="group flex items-center gap-4 rounded-xl border border-border/60 bg-card p-3 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-lg animate-fade-in"
+                  style={{ animationDelay: `${Math.min(idx, 20) * 20}ms`, animationFillMode: "backwards" }}
+                >
+                  <div className={`flex size-16 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br ${pal.from} ${pal.via} ${pal.to}`}>
+                    <Package className="size-7 text-white/90" strokeWidth={1.5} />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <h3 className="truncate font-semibold group-hover:text-fuchsia-600">{p.name}</h3>
+                    <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                      {p.reference && <span className="font-mono">{p.reference}</span>}
+                      {p.category && <Badge variant="secondary" className="text-[10px]">{p.category}</Badge>}
+                    </div>
+                  </div>
+                  <div className="hidden text-right sm:block">
+                    <div className="text-[10px] uppercase tracking-wide text-muted-foreground">Stock</div>
+                    <div className="text-sm font-semibold">{p.quantity}<span className="ml-0.5 text-xs font-normal text-muted-foreground">{p.unit || ""}</span></div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-[10px] uppercase tracking-wide text-muted-foreground">Price</div>
+                    <div className={`bg-gradient-to-r ${pal.from} ${pal.to} bg-clip-text font-bold text-transparent`}>
+                      {fmt(p.price, p.currency)}
+                    </div>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="overflow-x-auto rounded-2xl border border-border/60 bg-card shadow-sm">
+            <table className="min-w-full text-sm">
+              <thead className="bg-muted/50 text-xs uppercase tracking-wide text-muted-foreground">
+                <tr>
+                  <th className="px-4 py-3 text-left font-medium">Name</th>
+                  <th className="px-4 py-3 text-left font-medium">Reference</th>
+                  <th className="px-4 py-3 text-left font-medium">Category</th>
+                  <th className="px-4 py-3 text-right font-medium">Price</th>
+                  <th className="px-4 py-3 text-right font-medium">Cost</th>
+                  <th className="px-4 py-3 text-right font-medium">Stock</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.slice(0, 200).map(({ p, i }) => (
+                  <tr key={`${p.reference}-${i}`} className="border-t border-border/60 transition-colors hover:bg-muted/40">
+                    <td className="px-4 py-3">
+                      <Link to={`/products/${i}`} className="font-medium hover:text-fuchsia-600">
+                        {p.name}
+                      </Link>
+                    </td>
+                    <td className="px-4 py-3 font-mono text-xs text-muted-foreground">{p.reference || "—"}</td>
+                    <td className="px-4 py-3">{p.category ? <Badge variant="secondary">{p.category}</Badge> : <span className="text-muted-foreground">—</span>}</td>
+                    <td className="px-4 py-3 text-right font-semibold">{fmt(p.price, p.currency)}</td>
+                    <td className="px-4 py-3 text-right text-muted-foreground">{fmt(p.cost, p.currency)}</td>
+                    <td className="px-4 py-3 text-right">{p.quantity}<span className="ml-0.5 text-xs text-muted-foreground">{p.unit || ""}</span></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         )}
         {filtered.length > 200 && (
