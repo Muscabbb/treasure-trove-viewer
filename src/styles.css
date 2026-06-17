@@ -203,3 +203,24 @@
 @media (prefers-reduced-motion: reduce) {
   .wave { animation: none !important; }
 }
+
+.parallax-layer { will-change: transform; transition: transform 0.15s linear; }
+
+.parallax-blob {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(80px);
+  opacity: 0.55;
+  will-change: transform;
+  transition: transform 0.2s linear;
+}
+.parallax-blob-1 {
+  width: 55vw; height: 55vw;
+  top: -10vw; left: -15vw;
+  background: radial-gradient(circle, var(--wave-tint-a), transparent 65%);
+}
+.parallax-blob-2 {
+  width: 50vw; height: 50vw;
+  top: 30vh; right: -15vw;
+  background: radial-gradient(circle, var(--wave-tint-b), transparent 65%);
+}
