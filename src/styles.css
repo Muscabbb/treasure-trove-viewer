@@ -142,3 +142,64 @@
     color: var(--color-foreground);
   }
 }
+
+/* ============== Wavy animated background ============== */
+:root {
+  --wave-tint-a: oklch(0.85 0.13 240);
+  --wave-tint-b: oklch(0.88 0.12 320);
+  --wave-tint-c: oklch(0.9 0.11 180);
+}
+
+.dark {
+  --wave-tint-a: oklch(0.45 0.18 265);
+  --wave-tint-b: oklch(0.4 0.2 310);
+  --wave-tint-c: oklch(0.42 0.16 200);
+}
+
+.wavy-bg {
+  background:
+    radial-gradient(ellipse at top left, color-mix(in oklch, var(--wave-tint-a) 35%, transparent), transparent 55%),
+    radial-gradient(ellipse at bottom right, color-mix(in oklch, var(--wave-tint-b) 30%, transparent), transparent 60%),
+    var(--background);
+}
+
+.wave-stop-1a { stop-color: var(--wave-tint-a); stop-opacity: 0.75; }
+.wave-stop-1b { stop-color: var(--wave-tint-c); stop-opacity: 0.55; }
+.wave-stop-2a { stop-color: var(--wave-tint-b); stop-opacity: 0.7; }
+.wave-stop-2b { stop-color: var(--wave-tint-a); stop-opacity: 0.5; }
+.wave-stop-3a { stop-color: var(--wave-tint-c); stop-opacity: 0.65; }
+.wave-stop-3b { stop-color: var(--wave-tint-b); stop-opacity: 0.45; }
+
+.wave { will-change: d, opacity; }
+
+.wave-1 {
+  d: path("M0,450 C240,360 480,540 720,450 C960,360 1200,540 1440,450 L1440,900 L0,900 Z");
+  animation: wave-morph-1 14s ease-in-out infinite alternate;
+}
+.wave-2 {
+  d: path("M0,500 C300,420 600,580 960,500 C1200,440 1320,520 1440,500 L1440,900 L0,900 Z");
+  animation: wave-morph-2 18s ease-in-out infinite alternate;
+  opacity: 0.85;
+}
+.wave-3 {
+  d: path("M0,560 C200,500 520,640 800,560 C1080,480 1280,620 1440,560 L1440,900 L0,900 Z");
+  animation: wave-morph-3 22s ease-in-out infinite alternate;
+  opacity: 0.7;
+}
+
+@keyframes wave-morph-1 {
+  0%   { d: path("M0,450 C240,360 480,540 720,450 C960,360 1200,540 1440,450 L1440,900 L0,900 Z"); }
+  100% { d: path("M0,470 C260,560 500,380 760,470 C1000,560 1220,380 1440,470 L1440,900 L0,900 Z"); }
+}
+@keyframes wave-morph-2 {
+  0%   { d: path("M0,500 C300,420 600,580 960,500 C1200,440 1320,520 1440,500 L1440,900 L0,900 Z"); }
+  100% { d: path("M0,520 C320,600 640,420 960,520 C1180,580 1340,460 1440,520 L1440,900 L0,900 Z"); }
+}
+@keyframes wave-morph-3 {
+  0%   { d: path("M0,560 C200,500 520,640 800,560 C1080,480 1280,620 1440,560 L1440,900 L0,900 Z"); }
+  100% { d: path("M0,580 C240,660 540,500 820,580 C1100,660 1300,500 1440,580 L1440,900 L0,900 Z"); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wave { animation: none !important; }
+}
