@@ -273,10 +273,77 @@ export default function Products() {
             </table>
           </div>
         )}
-        {filtered.length > 200 && (
-          <p className="mt-8 text-center text-sm text-muted-foreground">
-            Showing first 200 results. Refine your search to see more.
-          </p>
+        {filtered.length > 0 && (
+          <nav
+            aria-label="Pagination"
+            className="mt-10 flex flex-col items-center justify-between gap-4 sm:flex-row"
+          >
+            <p className="text-sm text-muted-foreground">
+              Showing <span className="font-medium text-foreground">{pageStart + 1}</span>–
+              <span className="font-medium text-foreground">
+                {Math.min(pageStart + PAGE_SIZE, filtered.length)}
+              </span>{" "}
+              of <span className="font-medium text-foreground">{filtered.length.toLocaleString()}</span>
+            </p>
+            <div className="inline-flex items-center gap-1 rounded-xl border border-border/60 bg-background/60 p-1 backdrop-blur">
+              <Button
+                type="button"
+                size="sm"
+                variant="ghost"
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+                className="gap-1"
+              >
+                <ChevronLeft className="size-4" />
+                <span className="hidden sm:inline">Prev</span>
+              </Button>
+              {(() => {
+                const pages: (number | "…")[] = [];
+                const window = 1;
+                for (let i = 1; i <= totalPages; i++) {
+                  if (
+                    i === 1 ||
+                    i === totalPages ||
+                    (i >= currentPage - window && i <= currentPage + window)
+                  ) {
+                    pages.push(i);
+                  } else if (pages[pages.length - 1] !== "…") {
+                    pages.push("…");
+                  }
+                }
+                return pages.map((p, idx) =>
+                  p === "…" ? (
+                    <span key={`e-${idx}`} className="px-2 text-sm text-muted-foreground">
+                      …
+                    </span>
+                  ) : (
+                    <Button
+                      key={p}
+                      type="button"
+                      size="sm"
+                      variant={p === currentPage ? "default" : "ghost"}
+                      onClick={() => setPage(p)}
+                      aria-current={p === currentPage ? "page" : undefined}
+                      className="min-w-9"
+                    >
+                      {p}
+                    </Button>
+                  )
+                );
+              })()}
+              <Button
+                type="button"
+                size="sm"
+                variant="ghost"
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                disabled={currentPage === totalPages}
+                className="gap-1"
+              >
+                <span className="hidden sm:inline">Next</span>
+                <ChevronRight className="size-4" />
+              </Button>
+            </div>
+          </nav>
         )}
       </div>
     </main>
