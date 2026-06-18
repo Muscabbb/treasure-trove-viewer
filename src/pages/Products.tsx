@@ -80,8 +80,14 @@ export default function Products() {
     });
   }, [q]);
 
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const currentPage = Math.min(page, totalPages);
+  const pageStart = (currentPage - 1) * PAGE_SIZE;
+  const pageItems = filtered.slice(pageStart, pageStart + PAGE_SIZE);
+
   const fmt = (n: number, cur: string | null) =>
     new Intl.NumberFormat("en-US", { style: "currency", currency: cur || "USD" }).format(n);
+
 
   return (
     <main className="relative min-h-screen overflow-hidden">
