@@ -1,10 +1,12 @@
 import { Link, useSearchParams } from "react-router-dom";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import productsData from "@/data/products.json";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Package, TrendingUp, Sparkles, LayoutGrid, Rows3, Table as TableIcon } from "lucide-react";
+import { Package, TrendingUp, Sparkles, LayoutGrid, Rows3, Table as TableIcon, ChevronLeft, ChevronRight } from "lucide-react";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
+
+const PAGE_SIZE = 10;
 
 type LayoutMode = "grid" | "list" | "table";
 
