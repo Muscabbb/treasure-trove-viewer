@@ -144,7 +144,7 @@ export default function Products() {
           </div>
         ) : layout === "grid" ? (
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {filtered.slice(0, 200).map(({ p, i }, idx) => {
+            {pageItems.map(({ p, i }, idx) => {
               const margin = p.price > 0 ? ((p.price - p.cost) / p.price) * 100 : 0;
               const pal = paletteFor(p.reference || p.name);
               return (
@@ -208,7 +208,7 @@ export default function Products() {
           </div>
         ) : layout === "list" ? (
           <div className="flex flex-col gap-3">
-            {filtered.slice(0, 200).map(({ p, i }, idx) => {
+            {pageItems.map(({ p, i }, idx) => {
               const pal = paletteFor(p.reference || p.name);
               return (
                 <Link
@@ -255,7 +255,7 @@ export default function Products() {
                 </tr>
               </thead>
               <tbody>
-                {filtered.slice(0, 200).map(({ p, i }) => (
+                {pageItems.map(({ p, i }) => (
                   <tr key={`${p.reference}-${i}`} className="border-t border-border/60 transition-colors hover:bg-muted/40">
                     <td className="px-4 py-3">
                       <Link to={`/products/${i}`} className="font-medium hover:text-fuchsia-600">
