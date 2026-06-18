@@ -75,7 +75,7 @@ export default function Products() {
     new Intl.NumberFormat("en-US", { style: "currency", currency: cur || "USD" }).format(n);
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-background">
+    <main className="relative min-h-screen overflow-hidden">
       <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
         <div className="absolute -top-32 -left-24 size-[28rem] rounded-full bg-fuchsia-300/30 blur-3xl" />
         <div className="absolute top-40 -right-24 size-[28rem] rounded-full bg-sky-300/30 blur-3xl" />
