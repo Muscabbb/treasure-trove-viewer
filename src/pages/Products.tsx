@@ -46,6 +46,13 @@ export default function Products() {
   const [params] = useSearchParams();
   const q = params.get("q") ?? "";
   const [layout, setLayout] = useState<LayoutMode>("grid");
+  const [page, setPage] = useState(1);
+
+  // Reset to first page whenever the search query changes
+  useEffect(() => {
+    setPage(1);
+  }, [q]);
+
 
 
   const filtered = useMemo(() => {
