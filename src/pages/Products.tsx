@@ -1,10 +1,12 @@
 import { Link, useSearchParams } from "react-router-dom";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import productsData from "@/data/products.json";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Package, TrendingUp, Sparkles, LayoutGrid, Rows3, Table as TableIcon } from "lucide-react";
+import { Package, TrendingUp, Sparkles, LayoutGrid, Rows3, Table as TableIcon, ChevronLeft, ChevronRight } from "lucide-react";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
+
+const PAGE_SIZE = 10;
 
 type LayoutMode = "grid" | "list" | "table";
 
@@ -44,6 +46,13 @@ export default function Products() {
   const [params] = useSearchParams();
   const q = params.get("q") ?? "";
   const [layout, setLayout] = useState<LayoutMode>("grid");
+  const [page, setPage] = useState(1);
+
+  // Reset to first page whenever the search query changes
+  useEffect(() => {
+    setPage(1);
+  }, [q]);
+
 
 
   const filtered = useMemo(() => {
@@ -71,8 +80,14 @@ export default function Products() {
     });
   }, [q]);
 
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const currentPage = Math.min(page, totalPages);
+  const pageStart = (currentPage - 1) * PAGE_SIZE;
+  const pageItems = filtered.slice(pageStart, pageStart + PAGE_SIZE);
+
   const fmt = (n: number, cur: string | null) =>
     new Intl.NumberFormat("en-US", { style: "currency", currency: cur || "USD" }).format(n);
+
 
   return (
     <main className="relative min-h-screen overflow-hidden">
@@ -129,7 +144,7 @@ export default function Products() {
           </div>
         ) : layout === "grid" ? (
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {filtered.slice(0, 200).map(({ p, i }, idx) => {
+            {pageItems.map(({ p, i }, idx) => {
               const margin = p.price > 0 ? ((p.price - p.cost) / p.price) * 100 : 0;
               const pal = paletteFor(p.reference || p.name);
               return (
@@ -193,7 +208,7 @@ export default function Products() {
           </div>
         ) : layout === "list" ? (
           <div className="flex flex-col gap-3">
-            {filtered.slice(0, 200).map(({ p, i }, idx) => {
+            {pageItems.map(({ p, i }, idx) => {
               const pal = paletteFor(p.reference || p.name);
               return (
                 <Link
@@ -240,7 +255,7 @@ export default function Products() {
                 </tr>
               </thead>
               <tbody>
-                {filtered.slice(0, 200).map(({ p, i }) => (
+                {pageItems.map(({ p, i }) => (
                   <tr key={`${p.reference}-${i}`} className="border-t border-border/60 transition-colors hover:bg-muted/40">
                     <td className="px-4 py-3">
                       <Link to={`/products/${i}`} className="font-medium hover:text-fuchsia-600">
@@ -258,10 +273,77 @@ export default function Products() {
             </table>
           </div>
         )}
-        {filtered.length > 200 && (
-          <p className="mt-8 text-center text-sm text-muted-foreground">
-            Showing first 200 results. Refine your search to see more.
-          </p>
+        {filtered.length > 0 && (
+          <nav
+            aria-label="Pagination"
+            className="mt-10 flex flex-col items-center justify-between gap-4 sm:flex-row"
+          >
+            <p className="text-sm text-muted-foreground">
+              Showing <span className="font-medium text-foreground">{pageStart + 1}</span>–
+              <span className="font-medium text-foreground">
+                {Math.min(pageStart + PAGE_SIZE, filtered.length)}
+              </span>{" "}
+              of <span className="font-medium text-foreground">{filtered.length.toLocaleString()}</span>
+            </p>
+            <div className="inline-flex items-center gap-1 rounded-xl border border-border/60 bg-background/60 p-1 backdrop-blur">
+              <Button
+                type="button"
+                size="sm"
+                variant="ghost"
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+                className="gap-1"
+              >
+                <ChevronLeft className="size-4" />
+                <span className="hidden sm:inline">Prev</span>
+              </Button>
+              {(() => {
+                const pages: (number | "…")[] = [];
+                const window = 1;
+                for (let i = 1; i <= totalPages; i++) {
+                  if (
+                    i === 1 ||
+                    i === totalPages ||
+                    (i >= currentPage - window && i <= currentPage + window)
+                  ) {
+                    pages.push(i);
+                  } else if (pages[pages.length - 1] !== "…") {
+                    pages.push("…");
+                  }
+                }
+                return pages.map((p, idx) =>
+                  p === "…" ? (
+                    <span key={`e-${idx}`} className="px-2 text-sm text-muted-foreground">
+                      …
+                    </span>
+                  ) : (
+                    <Button
+                      key={p}
+                      type="button"
+                      size="sm"
+                      variant={p === currentPage ? "default" : "ghost"}
+                      onClick={() => setPage(p)}
+                      aria-current={p === currentPage ? "page" : undefined}
+                      className="min-w-9"
+                    >
+                      {p}
+                    </Button>
+                  )
+                );
+              })()}
+              <Button
+                type="button"
+                size="sm"
+                variant="ghost"
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                disabled={currentPage === totalPages}
+                className="gap-1"
+              >
+                <span className="hidden sm:inline">Next</span>
+                <ChevronRight className="size-4" />
+              </Button>
+            </div>
+          </nav>
         )}
       </div>
     </main>
