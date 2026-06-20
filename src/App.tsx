@@ -1,6 +1,7 @@
 import { Routes, Route, Outlet } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import WavyBackground from "./components/WavyBackground";
+import SolarSystem from "./components/SolarSystem";
 import Home from "./pages/Home";
 import Products from "./pages/Products";
 import ProductDetail from "./pages/ProductDetail";
@@ -10,6 +11,7 @@ function Layout() {
   return (
     <>
       <WavyBackground />
+      <SolarSystem />
       <Navbar />
       <div className="pt-16">
         <Outlet />
