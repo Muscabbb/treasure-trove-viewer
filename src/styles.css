@@ -354,9 +354,6 @@
   height: 100%;
   border-radius: 9999px;
   transition: transform .25s ease;
-  /* counter-rotate so planet doesn't appear to spin around its own axis with the orbit */
-  animation: planet-counter linear infinite;
-  animation-duration: inherit;
 }
 
 .planet-ring {
@@ -427,10 +424,6 @@
   100% { transform: scale(1.06); opacity: 1; }
 }
 
-@keyframes planet-counter {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(-360deg); }
-}
 
 @media (max-width: 768px) {
   .solar-center { top: 60%; transform: scale(.55); transform-origin: left top; }
